@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Called when the Google API Client is suspended
      *
-     * @param cause cause The reason for the disconnection. Defined by constants CAUSE_*.
+     * @param cause The reason for the disconnection. Defined by constants CAUSE_*.
      */
     @Override
     public void onConnectionSuspended(int cause) {
@@ -274,8 +274,7 @@ public class MainActivity extends AppCompatActivity implements
         }
         else if (resultCode == RESULT_CANCELED) {
             // The user canceled the operation.
-            Log.i(TAG, "User canceled the operation.");
-            Log.d(TAG, "No place was selected.");
+            Log.i(TAG, "No place was selected.");
         }
     }
 }
