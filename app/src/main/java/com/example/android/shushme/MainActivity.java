@@ -39,9 +39,9 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.places.Place;
+/*import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.location.places.ui.PlacePicker;*/
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements
     // Constants
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public static final int PLACE_PICKER_REQUEST = 3;
+    // public static final int PLACE_PICKER_REQUEST = 3;
 
     // Member variables
     private PlaceListAdapter mAdapter;
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
-                .addApi(Places.GEO_DATA_API)
+                // .addApi(Places.GEO_DATA_API)
                 .enableAutoManage(this, this)
                 .build();
     }
@@ -224,7 +224,7 @@ public class MainActivity extends AppCompatActivity implements
                 == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getString(R.string.location_permissions_granted_message), Toast.LENGTH_LONG).show();
 
-            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
             try {
                 Intent intent = builder.build(this);
                 startActivityForResult(intent, PLACE_PICKER_REQUEST);
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements
             } catch (GooglePlayServicesNotAvailableException e) {
                 Log.e(TAG, "Google Play Services is not available.", e);
                 e.printStackTrace();
-            }
+            }*/
         }
         else
         {
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK)
+        /*if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK)
         {
             Place place = PlacePicker.getPlace(this, data);
             if (place != null) {
@@ -264,6 +264,6 @@ public class MainActivity extends AppCompatActivity implements
             {
                 Log.d(TAG, "No place was selected.");
             }
-        }
+        }*/
     }
 }
