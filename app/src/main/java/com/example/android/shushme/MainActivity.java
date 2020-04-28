@@ -18,6 +18,8 @@ package com.example.android.shushme;
 
 import android.Manifest;
 // import android.content.DialogInterface;
+import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,18 +35,23 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.example.android.shushme.provider.PlaceContract;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     // Constants
     public static final String TAG = MainActivity.class.getSimpleName();
-
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static final int PLACE_PICKER_REQUEST = 3;
 
     // Member variables
     private PlaceListAdapter mAdapter;
@@ -218,10 +225,47 @@ public class MainActivity extends AppCompatActivity implements
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, getString(R.string.location_permissions_granted_message), Toast.LENGTH_LONG).show();
+
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            try {
+                Intent intent = builder.build(this);
+                startActivityForResult(intent, PLACE_PICKER_REQUEST);
+            } catch (GooglePlayServicesRepairableException e) {
+                Log.e(TAG, "Google Play Services is not installed, up-to-date, or enabled.", e);
+                e.printStackTrace();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                Log.e(TAG, "Google Play Services is not available.", e);
+                e.printStackTrace();
+            }
         }
         else
         {
             Toast.makeText(this, getString(R.string.need_location_permission_message), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PLACE_PICKER_REQUEST && resultCode == RESULT_OK)
+        {
+            Place place = PlacePicker.getPlace(this, data);
+            if (place != null) {
+                String placeId = place.getId();
+                Log.d(TAG, "place id is " + placeId);
+                String placeName = String.format("Place: %s", place.getName());
+                Toast.makeText(this, placeName, Toast.LENGTH_LONG).show();
+
+                // Create a new map of values, where column names are the keys
+                // ContentValues values = new ContentValues();
+                // values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
+                // getContentResolver().insert(PlaceContract.BASE_CONTENT_URI, values);
+            }
+            else
+            {
+                Log.d(TAG, "No place was selected.");
+            }
         }
     }
 }
