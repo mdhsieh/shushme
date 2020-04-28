@@ -17,16 +17,14 @@ package com.example.android.shushme;
 */
 
 import android.Manifest;
-import android.content.DialogInterface;
+// import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+// import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -68,6 +66,9 @@ public class MainActivity extends AppCompatActivity implements
         mAdapter = new PlaceListAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
 
+        // Build up the LocationServices API client
+        // Uses the addApi method to request the LocationServices API
+        // Also uses enableAutoManage to automatically when to connect/suspend the client
         GoogleApiClient client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -77,16 +78,31 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
     }
 
+    /**
+     * Called when the Google API Client is successfully connected
+     *
+     * @param connectionHint Bundle of data provided to clients by Google Play services
+     */
     @Override
     public void onConnected(@Nullable Bundle connectionHint) {
         Log.i(TAG, "API Client Connection Successful!");
     }
 
+    /**
+     * Called when the Google API Client is suspended
+     *
+     * @param cause cause The reason for the disconnection. Defined by constants CAUSE_*.
+     */
     @Override
     public void onConnectionSuspended(int cause) {
         Log.i(TAG, "API Client Connection Suspended!");
     }
 
+    /**
+     * Called when the Google API Client failed to connect to Google Play Services
+     *
+     * @param connectionResult A ConnectionResult that can be used for resolving the error
+     */
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "API Client Connection Failed!");
@@ -96,24 +112,32 @@ public class MainActivity extends AppCompatActivity implements
     protected void onResume() {
         super.onResume();
 
-        final CheckBox checkBox = (CheckBox) findViewById(R.id.permissions_checkbox);
+        // Initialize location permissions checkbox
+        final CheckBox locationPermissions = (CheckBox) findViewById(R.id.location_permission_checkbox);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            if (checkBox.isEnabled()) {
-                Log.d(TAG, "Permissions already granted so initialize to true");
-                checkBox.setChecked(true);
-                checkBox.setEnabled(false);
+            if (locationPermissions.isEnabled()) {
+                // permissions already granted so initialize to true
+                locationPermissions.setChecked(true);
+                locationPermissions.setEnabled(false);
             }
         }
         else
         {
-            checkBox.setChecked(false);
+            locationPermissions.setChecked(false);
         }
     }
 
+    // Android 6.0 and up lets user allow permissions at runtime
+    // Older versions request permissions at installation
     public void onLocationPermissionClicked(View view)
     {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                MY_PERMISSIONS_REQUEST_LOCATION);
+
+        /*
         // Here, "this" is the current activity
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
@@ -150,27 +174,29 @@ public class MainActivity extends AppCompatActivity implements
             // Permission has already been granted
             Log.d(TAG, "Permission has already been granted.");
         }
+        */
     }
 
+    /*
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_LOCATION: {
                 // If request is cancelled, the result arrays are empty.
-                final CheckBox checkBox = (CheckBox) findViewById(R.id.permissions_checkbox);
+                final CheckBox locationPermissions = (CheckBox) findViewById(R.id.location_permission_checkbox);
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     Log.d(TAG, "Permission granted.");
-                    checkBox.setChecked(true);
-                    checkBox.setEnabled(false);
+                    locationPermissions.setChecked(true);
+                    locationPermissions.setEnabled(false);
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Log.d(TAG, "Permission denied.");
-                    checkBox.setChecked(false);
+                    locationPermissions.setChecked(false);
                 }
                 return;
             }
@@ -179,17 +205,23 @@ public class MainActivity extends AppCompatActivity implements
             // permissions this app might request.
         }
     }
+    */
 
-    public void addPlaceClicked(View view)
+    /**
+     * Button Click event handler to handle clicking the "Add new location" Button
+     *
+     * @param view
+     */
+    public void addPlaceButtonClicked(View view)
     {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(this, getString(R.string.location_granted), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.location_permissions_granted_message), Toast.LENGTH_LONG).show();
         }
         else
         {
-            Toast.makeText(this, getString(R.string.location_denied), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.need_location_permission_message), Toast.LENGTH_LONG).show();
         }
     }
 }
