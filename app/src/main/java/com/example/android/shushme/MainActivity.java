@@ -35,8 +35,6 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-/*import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;*/
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
@@ -49,9 +47,6 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 
 import java.util.Arrays;
 import java.util.List;
-/*import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;*/
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -59,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements
     // Constants
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    /*public static final int PLACE_PICKER_REQUEST = 3;*/
     public static final int AUTOCOMPLETE_REQUEST_CODE = 4;
 
     // Member variables
@@ -89,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
-                // .addApi(Places.GEO_DATA_API)
                 .enableAutoManage(this, this)
                 .build();
 
@@ -248,18 +241,6 @@ public class MainActivity extends AppCompatActivity implements
                     AutocompleteActivityMode.FULLSCREEN, fields)
                     .build(this);
             startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
-
-            /*PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-            try {
-                Intent intent = builder.build(this);
-                startActivityForResult(intent, PLACE_PICKER_REQUEST);
-            } catch (GooglePlayServicesRepairableException e) {
-                Log.e(TAG, "Google Play Services is not installed, up-to-date, or enabled.", e);
-                e.printStackTrace();
-            } catch (GooglePlayServicesNotAvailableException e) {
-                Log.e(TAG, "Google Play Services is not available.", e);
-                e.printStackTrace();
-            }*/
         }
         else
         {
@@ -274,24 +255,16 @@ public class MainActivity extends AppCompatActivity implements
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE && resultCode == RESULT_OK)
         {
             Place place = Autocomplete.getPlaceFromIntent(data);
-            Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
 
-            /*Place place = PlacePicker.getPlace(this, data);
-            if (place != null) {
-                String placeId = place.getId();
-                Log.d(TAG, "place id is " + placeId);
-                String placeName = String.format("Place: %s", place.getName());
-                Toast.makeText(this, placeName, Toast.LENGTH_LONG).show();
+            String placeId = place.getId();
+            String placeName = place.getName();
 
-                // Create a new map of values, where column names are the keys
-                // ContentValues values = new ContentValues();
-                // values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
-                // getContentResolver().insert(PlaceContract.BASE_CONTENT_URI, values);
-            }
-            else
-            {
-                Log.d(TAG, "No place was selected.");
-            }*/
+            Log.i(TAG, "Place: " + placeName + ", " + placeId);
+
+            // Create a new map of values, where column names are the keys
+            // ContentValues values = new ContentValues();
+            // values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
+            // getContentResolver().insert(PlaceContract.BASE_CONTENT_URI, values);
         }
         else if (resultCode == AutocompleteActivity.RESULT_ERROR)
         {
@@ -302,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements
         else if (resultCode == RESULT_CANCELED) {
             // The user canceled the operation.
             Log.i(TAG, "User canceled the operation.");
+            Log.d(TAG, "No place was selected.");
         }
     }
 }
