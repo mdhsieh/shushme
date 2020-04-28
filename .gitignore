@@ -39,3 +39,6 @@ project.properties
 # Gradle-based build
 .gradle
 build/
+
+# class that holds API key
+app/src/main/java/com/example/android/shushme/ApiKey.java
