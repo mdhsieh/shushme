@@ -40,17 +40,18 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+/*import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;*/
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+/*import com.google.android.libraries.places.api.net.FetchPlaceResponse;*/
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -112,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnected(@Nullable Bundle connectionHint) {
         Log.i(TAG, "API Client Connection Successful!");
+        refreshPlacesData();
     }
 
     /**
@@ -148,28 +150,58 @@ public class MainActivity extends AppCompatActivity implements
         if (cursor != null) {
             cursor.moveToFirst();
 
+            // list of Places fetched from Google live server
+            List<Place> places = new ArrayList<>();
+
             String placeId;
-
             List<Place.Field> placeFields;
-
             FetchPlaceRequest request;
 
-            for (int i = 0; i < cursor.getCount(); i++){
+            for (int i = 0; i < cursor.getCount(); i++) {
                 // Define a Place ID.
                 placeId = cursor.getString(cursor
                         .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
                 //  Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
+
                 // Specify the fields to return.
                 placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
+
                 // Construct a request object, passing the place ID and fields array.
                 request = FetchPlaceRequest.newInstance(placeId, placeFields);
 
+                /* to use lambdas, the module settings were changed to use Java 8 language features.
+                    See Project Structure->Properties or the app build.gradle file.
+                 */
+
+                // Add a listener to handle the response.
+                placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                    Place place = response.getPlace();
+                    Log.i(TAG, "Place found: " + place.getName());
+                    Log.i(TAG, "Address: " + place.getAddress());
+
+                    // add the Place to the list
+                    places.add(place);
+                }).addOnFailureListener((exception) -> {
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        int statusCode = apiException.getStatusCode();
+                        // Handle error with given status code.
+                        Log.e(TAG, "Place not found: " + exception.getMessage());
+                    }
+                });
+
+                /*
+                // Add a listener to handle the response.
                 placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
                     @Override
                     public void onSuccess(FetchPlaceResponse response) {
                         Place place = response.getPlace();
                         Log.i(TAG, "Place found: " + place.getName());
                         Log.i(TAG, "Address: " + place.getAddress());
+
+                        // add the Place to the list
+                        finalPlaces.add(place);
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -182,6 +214,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     }
                 });
+                */
 
                 cursor.moveToNext();
             }
