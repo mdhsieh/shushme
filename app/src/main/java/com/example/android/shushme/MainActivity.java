@@ -17,6 +17,7 @@ package com.example.android.shushme;
 */
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.example.android.shushme.provider.PlaceContract;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
@@ -180,6 +182,13 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    /**
+     * Called when the Autocomplete Place Activity returns back with a selected place (or after canceling)
+     *
+     * @param requestCode The request code passed when calling startActivityForResult
+     * @param resultCode  The result code specified by the second activity
+     * @param data        The Intent that carries the result data.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -188,15 +197,17 @@ public class MainActivity extends AppCompatActivity implements
         {
             Place place = Autocomplete.getPlaceFromIntent(data);
 
+            // Extract the place information from the API
             String placeId = place.getId();
             String placeName = place.getName();
 
             Log.i(TAG, "Place: " + placeName + ", " + placeId);
 
             // Create a new map of values, where column names are the keys
-            // ContentValues values = new ContentValues();
-            // values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
-            // getContentResolver().insert(PlaceContract.BASE_CONTENT_URI, values);
+            ContentValues values = new ContentValues();
+            values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
+            // Insert a new place into DB
+            getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, values);
         }
         else if (resultCode == AutocompleteActivity.RESULT_ERROR)
         {
