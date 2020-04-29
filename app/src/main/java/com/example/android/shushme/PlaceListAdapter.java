@@ -18,22 +18,33 @@ package com.example.android.shushme;
 
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.android.libraries.places.api.model.Place;
+
+import java.util.List;
+
+
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
 
+    public static final String TAG = PlaceListAdapter.class.getSimpleName();
+
     private Context mContext;
+    private List<Place> places;
 
     /**
      * Constructor using the context and the db cursor
      *
      * @param context the calling context/activity
      */
-    public PlaceListAdapter(Context context) {
+    public PlaceListAdapter(Context context, List<Place> places) {
         this.mContext = context;
+        this.places = places;
     }
 
     /**
@@ -59,7 +70,14 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      */
     @Override
     public void onBindViewHolder(PlaceViewHolder holder, int position) {
+        // get the name and address of the Place in the current position
+        Place place = places.get(position);
+        String placeName = place.getName();
+        String placeAddress = place.getAddress();
 
+        // set the texts of the holder
+        holder.nameTextView.setText(placeName);
+        holder.addressTextView.setText(placeAddress);
     }
 
 
@@ -70,7 +88,19 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
      */
     @Override
     public int getItemCount() {
-        return 0;
+        if (places != null) {
+            return places.size();
+        }
+        else {
+            return 0;
+        }
+    }
+
+    // replaces the current places Place List with a new one
+    public void swapPlaces(List<Place> places)
+    {
+        this.places = places;
+        notifyDataSetChanged();
     }
 
     /**

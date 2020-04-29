@@ -21,6 +21,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -69,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private PlacesClient placesClient;
 
+    // list of Places fetched from Google live server
+    List<Place> places = new ArrayList<>();
+
     /**
      * Called when the activity is starting
      *
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements
         // Set up the recycler view
         mRecyclerView = (RecyclerView) findViewById(R.id.places_list_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mAdapter = new PlaceListAdapter(this);
+        mAdapter = new PlaceListAdapter(this, places);
         mRecyclerView.setAdapter(mAdapter);
 
         // Build up the LocationServices API client
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnected(@Nullable Bundle connectionHint) {
         Log.i(TAG, "API Client Connection Successful!");
+        // refresh places
         refreshPlacesData();
     }
 
@@ -140,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements
     // Calls placesClient.fetchPlace with that list of IDs
     private void refreshPlacesData()
     {
+        //new queryPlacesTask().execute();
         Cursor cursor = getContentResolver().query(
                 PlaceContract.PlaceEntry.CONTENT_URI,
                 null,
@@ -150,18 +156,16 @@ public class MainActivity extends AppCompatActivity implements
         if (cursor != null) {
             cursor.moveToFirst();
 
-            // list of Places fetched from Google live server
-            List<Place> places = new ArrayList<>();
-
             String placeId;
             List<Place.Field> placeFields;
             FetchPlaceRequest request;
 
+            //while (!cursor.isAfterLast()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 // Define a Place ID.
                 placeId = cursor.getString(cursor
                         .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
-                //  Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
+                //Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
 
                 // Specify the fields to return.
                 placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
@@ -169,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements
                 // Construct a request object, passing the place ID and fields array.
                 request = FetchPlaceRequest.newInstance(placeId, placeFields);
 
-                /* to use lambdas, the module settings were changed to use Java 8 language features.
-                    See Project Structure->Properties or the app build.gradle file.
-                 */
+                // to use lambdas, the module settings were changed to use Java 8 language features.
+                // See Project Structure->Properties or the app build.gradle file.
+
 
                 // Add a listener to handle the response.
                 placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
@@ -179,42 +183,21 @@ public class MainActivity extends AppCompatActivity implements
                     Log.i(TAG, "Place found: " + place.getName());
                     Log.i(TAG, "Address: " + place.getAddress());
 
-                    // add the Place to the list
+                    // add the Place to the list of places
                     places.add(place);
+                    Log.d(TAG, "size of places list is " + places.size());
+
+                    // swap places to update RecyclerView
+                    mAdapter.swapPlaces(places);
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;
                         int statusCode = apiException.getStatusCode();
                         // Handle error with given status code.
                         Log.e(TAG, "Place not found: " + exception.getMessage());
+                        Log.e(TAG, "Status code: " + statusCode);
                     }
                 });
-
-                /*
-                // Add a listener to handle the response.
-                placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
-                    @Override
-                    public void onSuccess(FetchPlaceResponse response) {
-                        Place place = response.getPlace();
-                        Log.i(TAG, "Place found: " + place.getName());
-                        Log.i(TAG, "Address: " + place.getAddress());
-
-                        // add the Place to the list
-                        finalPlaces.add(place);
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        if (exception instanceof ApiException) {
-                            ApiException apiException = (ApiException) exception;
-                            int statusCode = apiException.getStatusCode();
-                            // Handle error with given status code.
-                            Log.e(TAG, "Place not found: " + exception.getMessage());
-                        }
-                    }
-                });
-                */
 
                 cursor.moveToNext();
             }
@@ -222,6 +205,83 @@ public class MainActivity extends AppCompatActivity implements
             cursor.close();
         }
     }
+
+    /*
+    // query database to get all place IDs, then fetch place from server by ID
+    private class queryPlacesTask extends AsyncTask<Void, Void, List<Place>>
+    {
+
+        @Override
+        protected List<Place> doInBackground(Void... voids) {
+            Cursor cursor = getContentResolver().query(
+                    PlaceContract.PlaceEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            if (cursor != null)
+            {
+                cursor.moveToFirst();
+
+                String placeId;
+                List<Place.Field> placeFields;
+                FetchPlaceRequest request;
+
+                for (int i = 0; i < cursor.getCount(); i++)
+                {
+                    // Define a Place ID.
+                    placeId = cursor.getString(cursor
+                            .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
+
+                    // Specify the fields to return.
+                    placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
+
+                    // Construct a request object, passing the place ID and fields array.
+                    request = FetchPlaceRequest.newInstance(placeId, placeFields);
+
+                    // to use lambdas, the module settings were changed to use Java 8 language features.
+                    // See Project Structure->Properties or the app build.gradle file.
+
+                    // Add a listener to handle the response.
+                    placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
+                        Place place = response.getPlace();
+                        Log.i(TAG, "Place found: " + place.getName());
+                        Log.i(TAG, "Address: " + place.getAddress());
+
+                        // add the Place to the list of places
+                        places.add(place);
+                        Log.d(TAG, "size of places list is " + places.size());
+                    }).addOnFailureListener((exception) -> {
+                        if (exception instanceof ApiException) {
+                            ApiException apiException = (ApiException) exception;
+                            int statusCode = apiException.getStatusCode();
+                            // Handle error with given status code.
+                            Log.e(TAG, "Place not found: " + exception.getMessage());
+                            Log.e(TAG, "Status code: " + statusCode);
+                        }
+                    });
+
+                    Log.d(TAG, "before moving to next item, size of places list is " + places.size());
+
+                    cursor.moveToNext();
+                }
+                // always close the cursor
+                cursor.close();
+            }
+
+            return places;
+        }
+
+        @Override
+        protected void onPostExecute(List<Place> places) {
+            Log.d(TAG, "final size of places list is " + places.size());
+
+            // swap places to update RecyclerView
+            mAdapter.swapPlaces(places);
+        }
+    }
+     */
 
     @Override
     protected void onResume() {
