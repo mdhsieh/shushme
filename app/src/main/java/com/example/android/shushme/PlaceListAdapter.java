@@ -19,7 +19,6 @@ package com.example.android.shushme;
 import android.content.Context;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +30,6 @@ import java.util.List;
 
 
 public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.PlaceViewHolder> {
-
-    public static final String TAG = PlaceListAdapter.class.getSimpleName();
 
     private Context mContext;
     private List<Place> places;
@@ -100,7 +97,10 @@ public class PlaceListAdapter extends RecyclerView.Adapter<PlaceListAdapter.Plac
     public void swapPlaces(List<Place> places)
     {
         this.places = places;
-        notifyDataSetChanged();
+        if (places != null) {
+            // Force the RecyclerView to refresh
+            this.notifyDataSetChanged();
+        }
     }
 
     /**

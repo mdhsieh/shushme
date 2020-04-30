@@ -125,6 +125,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <!--Alternative layouts to hold Google logo and
+        link to privacy policy-->
+        <!--
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -132,7 +135,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_alignParentBottom="true">
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true">
                 <TextView
                     android:id="@+id/privacy_policy_link"
                     android:layout_width="wrap_content"
@@ -146,7 +150,34 @@
                     />
             </LinearLayout>
         </RelativeLayout>
+        -->
 
+    </LinearLayout>
+
+    <!-- layout which places Google logo and
+    privacy policy at bottom of screen -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="4dp"
+            android:src="@drawable/powered_by_google_on_white" />
+
+        <TextView
+            android:id="@+id/privacy_policy_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:text="@string/policy_link"
+            android:textAlignment="center"
+            android:gravity="center_horizontal" />
     </LinearLayout>
 
 </RelativeLayout>

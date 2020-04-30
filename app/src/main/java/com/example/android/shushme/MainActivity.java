@@ -21,7 +21,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.AsyncTask;
+/*import android.os.AsyncTask;*/
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity implements
         mAdapter = new PlaceListAdapter(this, places);
         mRecyclerView.setAdapter(mAdapter);
 
-        link = (TextView) findViewById(R.id.privacy_policy_link);
+        // get reference to link from layout
+        link = findViewById(R.id.privacy_policy_link);
         // make the link clickable
         link.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -109,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initialize Places.
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), ApiKey.getApiKey());
-            Log.d(TAG, "Places Client initialized.");
+            Log.i(TAG, "Places Client initialized.");
         }
 
         // Create a new Places client instance.
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnected(@Nullable Bundle connectionHint) {
         Log.i(TAG, "API Client Connection Successful!");
-        // refresh places
+        // Get live data information
         refreshPlacesData();
     }
 
@@ -152,9 +153,8 @@ public class MainActivity extends AppCompatActivity implements
     // Calls placesClient.fetchPlace with that list of IDs
     private void refreshPlacesData()
     {
-        new queryPlacesTask().execute();
+        /*new queryPlacesTask().execute();*/
 
-        /*
         Cursor cursor = getContentResolver().query(
                 PlaceContract.PlaceEntry.CONTENT_URI,
                 null,
@@ -162,18 +162,24 @@ public class MainActivity extends AppCompatActivity implements
                 null,
                 null
         );
-        if (cursor != null) {
+
+        if (cursor != null)
+        {
             cursor.moveToFirst();
+
+            // clear the list of places since we don't want repeats and
+            // are fetching from all IDs again
+            places.clear();
 
             String placeId;
             List<Place.Field> placeFields;
             FetchPlaceRequest request;
 
-            for (int i = 0; i < cursor.getCount(); i++) {
+            for (int i = 0; i < cursor.getCount(); i++)
+            {
                 // Define a Place ID.
                 placeId = cursor.getString(cursor
                         .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
-                //Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
 
                 // Specify the fields to return.
                 placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
@@ -184,16 +190,12 @@ public class MainActivity extends AppCompatActivity implements
                 // to use lambdas, the module settings were changed to use Java 8 language features.
                 // See Project Structure->Properties or the app build.gradle file.
 
-
                 // Add a listener to handle the response.
                 placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                     Place place = response.getPlace();
-                    Log.i(TAG, "Place found: " + place.getName());
-                    Log.i(TAG, "Address: " + place.getAddress());
 
                     // add the Place to the list of places
                     places.add(place);
-                    Log.d(TAG, "size of places list is " + places.size());
 
                     // swap places to update RecyclerView
                     mAdapter.swapPlaces(places);
@@ -212,9 +214,10 @@ public class MainActivity extends AppCompatActivity implements
             // always close the cursor
             cursor.close();
         }
-        */
+
     }
 
+    /*
     // query database to get all place IDs, then fetch place from server by ID
     private class queryPlacesTask extends AsyncTask<Void, Void, Void>
     {
@@ -245,7 +248,6 @@ public class MainActivity extends AppCompatActivity implements
                     // Define a Place ID.
                     placeId = cursor.getString(cursor
                             .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
-                    //Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
 
                     // Specify the fields to return.
                     placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
@@ -259,12 +261,9 @@ public class MainActivity extends AppCompatActivity implements
                     // Add a listener to handle the response.
                     placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                         Place place = response.getPlace();
-                        //Log.i(TAG, "Place found: " + place.getName());
-                        //Log.i(TAG, "Address: " + place.getAddress());
 
                         // add the Place to the list of places
                         places.add(place);
-                        //Log.d(TAG, "size of places list is " + places.size());
 
                         // swap places to update RecyclerView
                         mAdapter.swapPlaces(places);
@@ -285,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             return null;
         }
-    }
+    */
 
     @Override
     protected void onResume() {
@@ -360,17 +359,18 @@ public class MainActivity extends AppCompatActivity implements
 
             // Extract the place information from the API
             String placeId = place.getId();
-            String placeName = place.getName();
+            /* String placeName = place.getName();
             String placeAddress = place.getAddress();
 
-            Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
+            Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId); */
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
-            // Insert a new place into DB
+            // Insert a new Place ID into DB
             getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, values);
 
+            // Get live data information
             refreshPlacesData();
 
         }
