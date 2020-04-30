@@ -128,13 +128,23 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:id="@+id/places_autocomplete_powered_by_google"
-            android:src="@drawable/powered_by_google_on_white"
-            />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_alignParentBottom="true">
+                <TextView
+                    android:id="@+id/privacy_policy_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/policy_link"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/places_autocomplete_powered_by_google"
+                    android:src="@drawable/powered_by_google_on_white"
+                    />
+            </LinearLayout>
         </RelativeLayout>
 
     </LinearLayout>

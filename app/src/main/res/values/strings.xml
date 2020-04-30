@@ -8,4 +8,6 @@
     <string name="location_permissions">Location Permissions</string>
     <string name="need_location_permission_message">You need to enable location permissions first</string>
     <string name="location_permissions_granted_message">Location Permissions Granted</string>
+
+    <string name="policy_link"><a href="https://policies.google.com/privacy">Privacy Policy</a></string>
 </resources>

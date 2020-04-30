@@ -30,9 +30,12 @@ import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.shushme.provider.PlaceContract;
@@ -70,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements
     // list of Places fetched from Google live server
     List<Place> places = new ArrayList<>();
 
+    // link to Google's privacy policy
+    private TextView link;
+
     /**
      * Called when the activity is starting
      *
@@ -85,6 +91,10 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, places);
         mRecyclerView.setAdapter(mAdapter);
+
+        link = (TextView) findViewById(R.id.privacy_policy_link);
+        // make the link clickable
+        link.setMovementMethod(LinkMovementMethod.getInstance());
 
         // Build up the LocationServices API client
         // Uses the addApi method to request the LocationServices API
