@@ -2,14 +2,19 @@ package com.example.android.shushme;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.util.Log;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.libraries.places.api.model.Place;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Geofencing {
+
+    public static final String TAG = Geofencing.class.getSimpleName();
 
     public static final int GEOFENCE_RADIUS_IN_METERS = 3;
     // the Geofence will time out in 24 hours
@@ -28,6 +33,10 @@ public class Geofencing {
         geofenceList = new ArrayList<>();
     }
 
+    /**
+     * Create a Geofence for each place and add it to the Geofence ArrayList.
+     * @param places
+     */
     public void updateGeofencesList(List<Place> places)
     {
         if (places == null || places.size() == 0)
@@ -38,6 +47,10 @@ public class Geofencing {
             // read the place info from the database Cursor
             // the place's unique ID
             String placeId = place.getId();
+//            if (place.getLatLng() == null)
+//            {
+//                Log.e(TAG, "No latitude and longitude for " + place.getName());
+//            }
             double latitude = place.getLatLng().latitude;
             double longitude = place.getLatLng().longitude;
 
@@ -59,5 +72,18 @@ public class Geofencing {
             // add the Geofence to the list
             geofenceList.add(geofence);
         }
+    }
+
+    /**
+     * Create a GeofencingRequest object using the geofenceList ArrayList
+     * @return the GeofencingRequest object
+     */
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        // if the device is already in a Geofence at the time of registering,
+        // the trigger an entry transition event immediately
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
     }
 }
