@@ -2,6 +2,7 @@ package com.example.android.shushme;
 
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -35,6 +36,7 @@ public class Geofencing {
 
     /**
      * Create a Geofence for each place and add it to the Geofence ArrayList.
+     *
      * @param places
      */
     public void updateGeofencesList(List<Place> places)
@@ -76,6 +78,7 @@ public class Geofencing {
 
     /**
      * Create a GeofencingRequest object using the geofenceList ArrayList
+     *
      * @return the GeofencingRequest object
      */
     private GeofencingRequest getGeofencingRequest() {
@@ -85,5 +88,23 @@ public class Geofencing {
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(geofenceList);
         return builder.build();
+    }
+
+    /**
+     * Create a PendingIntent object
+     *
+     * @return the PendingIntent object
+     */
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(context, GeofenceBroadcastReceiver.class);
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+        // calling addGeofences() and removeGeofences().
+        geofencePendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return geofencePendingIntent;
     }
 }
