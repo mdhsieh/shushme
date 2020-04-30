@@ -219,8 +219,7 @@ public class MainActivity extends AppCompatActivity implements
 
     /*
     // query database to get all place IDs, then fetch place from server by ID
-    private class queryPlacesTask extends AsyncTask<Void, Void, Void>
-    {
+    private class queryPlacesTask extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -233,7 +232,8 @@ public class MainActivity extends AppCompatActivity implements
                     null
             );
 
-            if (cursor != null) {
+            if (cursor != null)
+            {
                 cursor.moveToFirst();
 
                 // clear the list of places since we don't want repeats and
@@ -244,7 +244,8 @@ public class MainActivity extends AppCompatActivity implements
                 List<Place.Field> placeFields;
                 FetchPlaceRequest request;
 
-                for (int i = 0; i < cursor.getCount(); i++) {
+                for (int i = 0; i < cursor.getCount(); i++)
+                {
                     // Define a Place ID.
                     placeId = cursor.getString(cursor
                             .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
@@ -284,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements
             }
             return null;
         }
+    }
     */
 
     @Override
@@ -359,10 +361,10 @@ public class MainActivity extends AppCompatActivity implements
 
             // Extract the place information from the API
             String placeId = place.getId();
-            /* String placeName = place.getName();
+            String placeName = place.getName();
             String placeAddress = place.getAddress();
 
-            Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId); */
+            Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
