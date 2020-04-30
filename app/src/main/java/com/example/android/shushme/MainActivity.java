@@ -18,7 +18,9 @@ package com.example.android.shushme;
 
 import android.Manifest;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 /*import android.os.AsyncTask;*/
@@ -35,6 +37,8 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,13 +72,18 @@ public class MainActivity extends AppCompatActivity implements
     private PlaceListAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
+    // link to Google's privacy policy
+    private TextView link;
+
+    // check whether the geofence on/off switch is enabled or not
+    private boolean isEnabled;
+
     private PlacesClient placesClient;
 
     // list of Places fetched from Google live server
     List<Place> places = new ArrayList<>();
 
-    // link to Google's privacy policy
-    private TextView link;
+    private Geofencing geofencing;
 
     /**
      * Called when the activity is starting
@@ -91,6 +100,33 @@ public class MainActivity extends AppCompatActivity implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new PlaceListAdapter(this, places);
         mRecyclerView.setAdapter(mAdapter);
+
+        // initialize switch and handle enable/disable switch change
+        Switch onOffSwitch = (Switch) findViewById(R.id.enable_switch);
+        isEnabled = getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.setting_enabled), false);
+        onOffSwitch.setChecked(isEnabled);
+        onOffSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // isChecked will be true if the switch is in the On position
+                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean(getString(R.string.setting_enabled), isChecked);
+                isEnabled = isChecked;
+                editor.commit();
+
+                if (isEnabled)
+                {
+                    geofencing.registerAllGeofences();
+                    Log.d(TAG, "registered all geofences");
+                }
+                else
+                {
+                    geofencing.unregisterAllGeofences();
+                    Log.d(TAG, "unregistered all geofences");
+                }
+            }
+        });
 
         // get reference to link from layout
         link = findViewById(R.id.privacy_policy_link);
@@ -115,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements
 
         // Create a new Places client instance.
         placesClient = Places.createClient(this);
+
+        geofencing = new Geofencing(this, client);
     }
 
     /**
@@ -199,6 +237,16 @@ public class MainActivity extends AppCompatActivity implements
 
                     // swap places to update RecyclerView
                     mAdapter.swapPlaces(places);
+
+                    // update geofences
+                    geofencing.updateGeofencesList(places);
+                    Log.d(TAG, "updated geofences list");
+                    // register all geofences if switch enabled
+                    if (isEnabled)
+                    {
+                        geofencing.registerAllGeofences();
+                        Log.d(TAG, "registered all geofences");
+                    }
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
                         ApiException apiException = (ApiException) exception;

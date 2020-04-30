@@ -26,6 +26,11 @@ public class Geofencing implements ResultCallback {
     // the Geofence will time out in 24 hours
     public static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
+    // default latitude and longitude is of Sydney Opera House in Austrailia
+    // these are used if one of the places has no specified longitude and latitude
+    public static final double DEFAULT_LATITUDE = -33.856159;
+    public static final double DEFAULT_LONGITUDE = 151.215256;
+
     private Context context;
     private GoogleApiClient googleApiClient;
     private PendingIntent geofencePendingIntent;
@@ -91,12 +96,22 @@ public class Geofencing implements ResultCallback {
             // read the place info from the database Cursor
             // the place's unique ID
             String placeId = place.getId();
-//            if (place.getLatLng() == null)
-//            {
-//                Log.e(TAG, "No latitude and longitude for " + place.getName());
-//            }
-            double latitude = place.getLatLng().latitude;
-            double longitude = place.getLatLng().longitude;
+
+            double latitude;
+            double longitude;
+            if (place.getLatLng() == null)
+            {
+                Log.i(TAG, "No latitude and longitude for " + place.getName());
+                latitude = DEFAULT_LATITUDE;
+                longitude = DEFAULT_LONGITUDE;
+            }
+            else
+            {
+                latitude = place.getLatLng().latitude;
+                longitude = place.getLatLng().longitude;
+                Log.d(TAG, place.getName() + " latitude: " + latitude);
+                Log.d(TAG, place.getName() + " longitude: " + longitude);
+            }
 
             // build a Geofence object
             Geofence geofence = new Geofence.Builder()
