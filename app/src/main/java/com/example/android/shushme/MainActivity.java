@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initialize Places.
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), ApiKey.getApiKey());
-            Log.d(TAG, "Places Client has been initialized.");
+            Log.d(TAG, "Places Client initialized.");
         }
 
         // Create a new Places client instance.
@@ -145,7 +145,9 @@ public class MainActivity extends AppCompatActivity implements
     // Calls placesClient.fetchPlace with that list of IDs
     private void refreshPlacesData()
     {
-        //new queryPlacesTask().execute();
+        new queryPlacesTask().execute();
+
+        /*
         Cursor cursor = getContentResolver().query(
                 PlaceContract.PlaceEntry.CONTENT_URI,
                 null,
@@ -160,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements
             List<Place.Field> placeFields;
             FetchPlaceRequest request;
 
-            //while (!cursor.isAfterLast()) {
             for (int i = 0; i < cursor.getCount(); i++) {
                 // Define a Place ID.
                 placeId = cursor.getString(cursor
@@ -204,15 +205,16 @@ public class MainActivity extends AppCompatActivity implements
             // always close the cursor
             cursor.close();
         }
+        */
     }
 
-    /*
     // query database to get all place IDs, then fetch place from server by ID
-    private class queryPlacesTask extends AsyncTask<Void, Void, List<Place>>
+    private class queryPlacesTask extends AsyncTask<Void, Void, Void>
     {
 
         @Override
-        protected List<Place> doInBackground(Void... voids) {
+        protected Void doInBackground(Void... voids) {
+
             Cursor cursor = getContentResolver().query(
                     PlaceContract.PlaceEntry.CONTENT_URI,
                     null,
@@ -220,19 +222,23 @@ public class MainActivity extends AppCompatActivity implements
                     null,
                     null
             );
-            if (cursor != null)
-            {
+
+            if (cursor != null) {
                 cursor.moveToFirst();
+
+                // clear the list of places since we don't want repeats and
+                // are fetching from all IDs again
+                places.clear();
 
                 String placeId;
                 List<Place.Field> placeFields;
                 FetchPlaceRequest request;
 
-                for (int i = 0; i < cursor.getCount(); i++)
-                {
+                for (int i = 0; i < cursor.getCount(); i++) {
                     // Define a Place ID.
                     placeId = cursor.getString(cursor
                             .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
+                    Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
 
                     // Specify the fields to return.
                     placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
@@ -252,6 +258,9 @@ public class MainActivity extends AppCompatActivity implements
                         // add the Place to the list of places
                         places.add(place);
                         Log.d(TAG, "size of places list is " + places.size());
+
+                        // swap places to update RecyclerView
+                        mAdapter.swapPlaces(places);
                     }).addOnFailureListener((exception) -> {
                         if (exception instanceof ApiException) {
                             ApiException apiException = (ApiException) exception;
@@ -262,26 +271,14 @@ public class MainActivity extends AppCompatActivity implements
                         }
                     });
 
-                    Log.d(TAG, "before moving to next item, size of places list is " + places.size());
-
                     cursor.moveToNext();
                 }
                 // always close the cursor
                 cursor.close();
             }
-
-            return places;
-        }
-
-        @Override
-        protected void onPostExecute(List<Place> places) {
-            Log.d(TAG, "final size of places list is " + places.size());
-
-            // swap places to update RecyclerView
-            mAdapter.swapPlaces(places);
+            return null;
         }
     }
-     */
 
     @Override
     protected void onResume() {
@@ -361,13 +358,11 @@ public class MainActivity extends AppCompatActivity implements
 
             Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
 
-            /*
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
             values.put(PlaceContract.PlaceEntry.COLUMN_PLACE_ID, placeId);
             // Insert a new place into DB
             getContentResolver().insert(PlaceContract.PlaceEntry.CONTENT_URI, values);
-            */
 
             refreshPlacesData();
 
