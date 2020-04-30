@@ -12,6 +12,7 @@ import java.util.List;
 public class Geofencing {
 
     public static final int GEOFENCE_RADIUS_IN_METERS = 3;
+    // the Geofence will time out in 24 hours
     public static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
     private Context context;
@@ -27,23 +28,36 @@ public class Geofencing {
         geofenceList = new ArrayList<>();
     }
 
-    public void updateGeofences(List<Place> places)
+    public void updateGeofencesList(List<Place> places)
     {
+        if (places == null || places.size() == 0)
+        {
+            return;
+        }
         for (Place place: places) {
-            geofenceList.add(new Geofence.Builder()
+            // read the place info from the database Cursor
+            // the place's unique ID
+            String placeId = place.getId();
+            double latitude = place.getLatLng().latitude;
+            double longitude = place.getLatLng().longitude;
+
+            // build a Geofence object
+            Geofence geofence = new Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this
                 // geofence.
-                .setRequestId(place.getId())
-
+                .setRequestId(placeId)
                 .setCircularRegion(
-                        place.getLatLng().latitude,
-                        place.getLatLng().longitude,
+                        latitude,
+                        longitude,
                         GEOFENCE_RADIUS_IN_METERS
                 )
                 .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
                         Geofence.GEOFENCE_TRANSITION_EXIT)
-                .build());
+                .build();
+
+            // add the Geofence to the list
+            geofenceList.add(geofence);
         }
     }
 }
