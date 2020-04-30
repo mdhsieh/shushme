@@ -6,18 +6,23 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Result;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.libraries.places.api.model.Place;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Geofencing {
+import androidx.annotation.NonNull;
+
+public class Geofencing implements ResultCallback {
 
     public static final String TAG = Geofencing.class.getSimpleName();
 
-    public static final int GEOFENCE_RADIUS_IN_METERS = 3;
+    public static final int GEOFENCE_RADIUS_IN_METERS = 50;
     // the Geofence will time out in 24 hours
     public static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
@@ -34,10 +39,47 @@ public class Geofencing {
         geofenceList = new ArrayList<>();
     }
 
+    public void registerAllGeofences()
+    {
+        if (googleApiClient == null || !googleApiClient.isConnected() ||
+            geofenceList == null || geofenceList.size() == 0)
+        {
+            return;
+        }
+        try {
+            LocationServices.GeofencingApi.addGeofences(
+                    googleApiClient,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(this);
+        } catch (SecurityException securityException) {
+            // Catch exceptions generated if app does not use ACCESS_FINE_LOCATION permission.
+            Log.e(TAG, securityException.getMessage());
+        }
+    }
+
+    public void unregisterAllGeofences()
+    {
+        if (googleApiClient == null || !googleApiClient.isConnected())
+        {
+            return;
+        }
+        try {
+            LocationServices.GeofencingApi.removeGeofences(
+                    googleApiClient,
+                    // This is the same pending intent that was used in registerAllGeofences
+                    getGeofencePendingIntent()
+            );
+        } catch (SecurityException securityException) {
+            // Catch exceptions generated if app does not use ACCESS_FINE_LOCATION permission.
+            Log.e(TAG, securityException.getMessage());
+        }
+    }
+
     /**
      * Create a Geofence for each place and add it to the Geofence ArrayList.
      *
-     * @param places
+     * @param places the ArrayList of places
      */
     public void updateGeofencesList(List<Place> places)
     {
@@ -106,5 +148,11 @@ public class Geofencing {
         geofencePendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.
                 FLAG_UPDATE_CURRENT);
         return geofencePendingIntent;
+    }
+
+    @Override
+    public void onResult(@NonNull Result result) {
+        Log.e(TAG, String.format("Error adding/removing geofence: %s",
+                result.getStatus().toString()));
     }
 }
