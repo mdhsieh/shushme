@@ -41,12 +41,9 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationServices;
-/*import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;*/
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-/*import com.google.android.libraries.places.api.net.FetchPlaceResponse;*/
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -238,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements
                     // Define a Place ID.
                     placeId = cursor.getString(cursor
                             .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
-                    Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
+                    //Log.d(TAG, "ID at position " + i + " in database is: " + placeId);
 
                     // Specify the fields to return.
                     placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
@@ -252,12 +249,12 @@ public class MainActivity extends AppCompatActivity implements
                     // Add a listener to handle the response.
                     placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
                         Place place = response.getPlace();
-                        Log.i(TAG, "Place found: " + place.getName());
-                        Log.i(TAG, "Address: " + place.getAddress());
+                        //Log.i(TAG, "Place found: " + place.getName());
+                        //Log.i(TAG, "Address: " + place.getAddress());
 
                         // add the Place to the list of places
                         places.add(place);
-                        Log.d(TAG, "size of places list is " + places.size());
+                        //Log.d(TAG, "size of places list is " + places.size());
 
                         // swap places to update RecyclerView
                         mAdapter.swapPlaces(places);
