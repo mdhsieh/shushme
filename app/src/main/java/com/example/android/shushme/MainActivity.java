@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-/*import android.os.AsyncTask;*/
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -191,7 +190,6 @@ public class MainActivity extends AppCompatActivity implements
     // Calls placesClient.fetchPlace with that list of IDs
     private void refreshPlacesData()
     {
-        /*new queryPlacesTask().execute();*/
 
         Cursor cursor = getContentResolver().query(
                 PlaceContract.PlaceEntry.CONTENT_URI,
@@ -264,77 +262,6 @@ public class MainActivity extends AppCompatActivity implements
         }
 
     }
-
-    /*
-    // query database to get all place IDs, then fetch place from server by ID
-    private class queryPlacesTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            Cursor cursor = getContentResolver().query(
-                    PlaceContract.PlaceEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null
-            );
-
-            if (cursor != null)
-            {
-                cursor.moveToFirst();
-
-                // clear the list of places since we don't want repeats and
-                // are fetching from all IDs again
-                places.clear();
-
-                String placeId;
-                List<Place.Field> placeFields;
-                FetchPlaceRequest request;
-
-                for (int i = 0; i < cursor.getCount(); i++)
-                {
-                    // Define a Place ID.
-                    placeId = cursor.getString(cursor
-                            .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
-
-                    // Specify the fields to return.
-                    placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
-
-                    // Construct a request object, passing the place ID and fields array.
-                    request = FetchPlaceRequest.newInstance(placeId, placeFields);
-
-                    // to use lambdas, the module settings were changed to use Java 8 language features.
-                    // See Project Structure->Properties or the app build.gradle file.
-
-                    // Add a listener to handle the response.
-                    placesClient.fetchPlace(request).addOnSuccessListener((response) -> {
-                        Place place = response.getPlace();
-
-                        // add the Place to the list of places
-                        places.add(place);
-
-                        // swap places to update RecyclerView
-                        mAdapter.swapPlaces(places);
-                    }).addOnFailureListener((exception) -> {
-                        if (exception instanceof ApiException) {
-                            ApiException apiException = (ApiException) exception;
-                            int statusCode = apiException.getStatusCode();
-                            // Handle error with given status code.
-                            Log.e(TAG, "Place not found: " + exception.getMessage());
-                            Log.e(TAG, "Status code: " + statusCode);
-                        }
-                    });
-
-                    cursor.moveToNext();
-                }
-                // always close the cursor
-                cursor.close();
-            }
-            return null;
-        }
-    }
-    */
 
     @Override
     protected void onResume() {
