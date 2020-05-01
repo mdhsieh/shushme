@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements
     // link to Google's privacy policy
     private TextView link;
 
-    // check whether the geofence on/off switch is enabled or not
+    // check whether the Geofence on/off switch is enabled or not
     private boolean isEnabled;
 
     private PlacesClient placesClient;

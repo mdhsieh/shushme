@@ -20,13 +20,14 @@ import androidx.annotation.NonNull;
 
 public class Geofencing implements ResultCallback {
 
+    // Constants
     public static final String TAG = Geofencing.class.getSimpleName();
 
-    public static final int GEOFENCE_RADIUS_IN_METERS = 50;
-    // the Geofence will time out in 24 hours
-    public static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
+    private static final int GEOFENCE_RADIUS_IN_METERS = 50;
+    // the Geofence will time out 24 hours after being registered
+    private static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-    // default latitude and longitude is of Sydney Opera House in Austrailia
+    // default latitude and longitude is of Sydney Opera House in Australia
     // these are used if one of the places has no specified longitude and latitude
     public static final double DEFAULT_LATITUDE = -33.856159;
     public static final double DEFAULT_LONGITUDE = 151.215256;
@@ -44,8 +45,17 @@ public class Geofencing implements ResultCallback {
         geofenceList = new ArrayList<>();
     }
 
+    /***
+     * Registers the list of Geofences specified in geofenceList with Google Place Services
+     * Uses {@code #mGoogleApiClient} to connect to Google Place Services
+     * Uses {@link #getGeofencingRequest} to get the list of Geofences to be registered
+     * Uses {@link #getGeofencePendingIntent} to get the pending intent to launch the IntentService
+     * when the Geofence is triggered
+     * Triggers {@link #onResult} when the geofences have been registered successfully
+     */
     public void registerAllGeofences()
     {
+        // Check that the API client is connected and that the list has Geofences in it
         if (googleApiClient == null || !googleApiClient.isConnected() ||
             geofenceList == null || geofenceList.size() == 0)
         {
@@ -58,11 +68,18 @@ public class Geofencing implements ResultCallback {
                     getGeofencePendingIntent()
             ).setResultCallback(this);
         } catch (SecurityException securityException) {
-            // Catch exceptions generated if app does not use ACCESS_FINE_LOCATION permission.
+            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.e(TAG, securityException.getMessage());
         }
     }
 
+    /***
+     * Unregisters all the Geofences created by this app from Google Place Services
+     * Uses {@code #mGoogleApiClient} to connect to Google Place Services
+     * Uses {@link #getGeofencePendingIntent} to get the pending intent passed when
+     * registering the Geofences in the first place
+     * Triggers {@link #onResult} when the geofences have been unregistered successfully
+     */
     public void unregisterAllGeofences()
     {
         if (googleApiClient == null || !googleApiClient.isConnected())
@@ -76,24 +93,27 @@ public class Geofencing implements ResultCallback {
                     getGeofencePendingIntent()
             );
         } catch (SecurityException securityException) {
-            // Catch exceptions generated if app does not use ACCESS_FINE_LOCATION permission.
+            // Catch exception generated if the app does not use ACCESS_FINE_LOCATION permission.
             Log.e(TAG, securityException.getMessage());
         }
     }
 
     /**
-     * Create a Geofence for each place and add it to the Geofence ArrayList.
+     * Updates the local ArrayList of Geofences using data from the passed in list
+     * Uses the Place ID defined by the API as the Geofence object ID
      *
-     * @param places the ArrayList of places
+     * @param places the List result of the getPlaceById call
      */
     public void updateGeofencesList(List<Place> places)
     {
+        geofenceList = new ArrayList<>();
         if (places == null || places.size() == 0)
         {
             return;
         }
         for (Place place: places) {
-            // read the place info from the database Cursor
+            // Read the place information from the database Cursor
+
             // the place's unique ID
             String placeId = place.getId();
 
@@ -113,7 +133,7 @@ public class Geofencing implements ResultCallback {
                 Log.d(TAG, place.getName() + " longitude: " + longitude);
             }
 
-            // build a Geofence object
+            // Build a Geofence object
             Geofence geofence = new Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this
                 // geofence.
@@ -134,21 +154,23 @@ public class Geofencing implements ResultCallback {
     }
 
     /**
-     * Create a GeofencingRequest object using the geofenceList ArrayList
+     * Create a GeofencingRequest object using the geofenceList ArrayList of Geofences
+     * Used by {@code #registerGeofences}
      *
      * @return the GeofencingRequest object
      */
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         // if the device is already in a Geofence at the time of registering,
-        // the trigger an entry transition event immediately
+        // then trigger an entry transition event immediately
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(geofenceList);
         return builder.build();
     }
 
     /**
-     * Create a PendingIntent object
+     * Creates a PendingIntent object using the GeofenceBroadcastReceiver class
+     * Used by {@code #registerGeofences}
      *
      * @return the PendingIntent object
      */
