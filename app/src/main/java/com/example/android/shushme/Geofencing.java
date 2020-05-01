@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Result;
@@ -27,10 +28,10 @@ public class Geofencing implements ResultCallback {
     // the Geofence will time out 24 hours after being registered
     private static final int GEOFENCE_EXPIRATION_IN_MILLISECONDS = 24 * 60 * 60 * 1000;
 
-    // default latitude and longitude is of Sydney Opera House in Australia
+    // default latitude and longitude
     // these are used if one of the places has no specified longitude and latitude
-    public static final double DEFAULT_LATITUDE = -33.856159;
-    public static final double DEFAULT_LONGITUDE = 151.215256;
+    public static final double DEFAULT_LATITUDE = 0.0;
+    public static final double DEFAULT_LONGITUDE = 0.0;
 
     private Context context;
     private GoogleApiClient googleApiClient;
@@ -122,6 +123,7 @@ public class Geofencing implements ResultCallback {
             if (place.getLatLng() == null)
             {
                 Log.i(TAG, "No latitude and longitude for " + place.getName());
+                Toast.makeText(context, "No latitude and longitude found for " + place.getName(), Toast.LENGTH_LONG).show();
                 latitude = DEFAULT_LATITUDE;
                 longitude = DEFAULT_LONGITUDE;
             }

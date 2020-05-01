@@ -220,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements
                         .getColumnIndex(PlaceContract.PlaceEntry.COLUMN_PLACE_ID));
 
                 // Specify the fields to return.
-                placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
+                placeFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
 
                 // Construct a request object, passing the place ID and fields array.
                 request = FetchPlaceRequest.newInstance(placeId, placeFields);
@@ -379,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(this, getString(R.string.location_permissions_granted_message), Toast.LENGTH_LONG).show();
 
             // Set the fields to specify which types of place data to return.
-            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS);
+            List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
             // Start the autocomplete intent.
             Intent intent = new Autocomplete.IntentBuilder(
                     AutocompleteActivityMode.FULLSCREEN, fields)
@@ -411,8 +411,11 @@ public class MainActivity extends AppCompatActivity implements
             String placeId = place.getId();
             String placeName = place.getName();
             String placeAddress = place.getAddress();
+            double latitude = place.getLatLng().latitude;
+            double longitude = place.getLatLng().longitude;
 
             Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
+            Log.i(TAG, "Latitude: " + latitude + ", " + "Longitude: " + longitude);
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
