@@ -1,8 +1,11 @@
 package com.example.android.shushme;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -35,15 +38,31 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         {
             Log.d(TAG, "entered a geofence");
             Toast.makeText(context, "entered a geofence", Toast.LENGTH_LONG).show();
+            setRingerMode(context, AudioManager.RINGER_MODE_SILENT);
         }
         else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)
         {
             Log.d(TAG, "exited a geofence");
+            setRingerMode(context, AudioManager.RINGER_MODE_NORMAL);
         }
         else
         {
             // Log the error
             Log.e(TAG, String.format("Unknown transition: %d", geofenceTransition));
+        }
+    }
+
+    public void setRingerMode(Context context, int mode)
+    {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // check for permissions for API 24+
+        if (Build.VERSION.SDK_INT < 24 ||
+                Build.VERSION.SDK_INT >= 24 && notificationManager.isNotificationPolicyAccessGranted())
+        {
+            AudioManager audioManager =
+                    (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+
+            audioManager.setRingerMode(mode);
         }
     }
 }

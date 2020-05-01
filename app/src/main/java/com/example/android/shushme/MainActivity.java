@@ -17,12 +17,14 @@ package com.example.android.shushme;
 */
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -282,6 +284,22 @@ public class MainActivity extends AppCompatActivity implements
         {
             locationPermissions.setChecked(false);
         }
+
+        // initialize ringer permissions checkbox
+        final CheckBox ringerPermissions = (CheckBox) findViewById(R.id.ringer_permissions_checkbox);
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // In case of Android N or later, we need to check if the permission was granted using isNotificationPolicyAccessGranted
+        if (Build.VERSION.SDK_INT >= 24
+                && !notificationManager.isNotificationPolicyAccessGranted()) {
+            ringerPermissions.setChecked(false);
+        }
+        else
+        {
+            // permissions granted by default
+            ringerPermissions.setChecked(true);
+            ringerPermissions.setEnabled(false);
+        }
     }
 
     // Android 6.0 and up lets user allow permissions at runtime
@@ -291,6 +309,17 @@ public class MainActivity extends AppCompatActivity implements
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                 MY_PERMISSIONS_REQUEST_LOCATION);
+    }
+
+    public void onRingerPermissionsClicked(View view)
+    {
+        if (Build.VERSION.SDK_INT >= 24) {
+            Intent intent = new Intent(
+                    android.provider.Settings
+                            .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
+            startActivity(intent);
+            //Toast.makeText(this, getString(R.string.ringer_permissions_granted_message), Toast.LENGTH_LONG).show();
+        }
     }
 
     /**
