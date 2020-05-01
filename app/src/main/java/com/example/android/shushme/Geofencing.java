@@ -122,7 +122,7 @@ public class Geofencing implements ResultCallback {
             double longitude;
             if (place.getLatLng() == null)
             {
-                Log.i(TAG, "No latitude and longitude for " + place.getName());
+                //Log.i(TAG, "No latitude and longitude for " + place.getName());
                 Toast.makeText(context, "No latitude and longitude found for " + place.getName(), Toast.LENGTH_LONG).show();
                 latitude = DEFAULT_LATITUDE;
                 longitude = DEFAULT_LONGITUDE;
@@ -131,8 +131,8 @@ public class Geofencing implements ResultCallback {
             {
                 latitude = place.getLatLng().latitude;
                 longitude = place.getLatLng().longitude;
-                Log.d(TAG, place.getName() + " latitude: " + latitude);
-                Log.d(TAG, place.getName() + " longitude: " + longitude);
+                //Log.d(TAG, place.getName() + " latitude: " + latitude);
+                //Log.d(TAG, place.getName() + " longitude: " + longitude);
             }
 
             // Build a Geofence object

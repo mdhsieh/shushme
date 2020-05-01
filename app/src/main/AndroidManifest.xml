@@ -22,12 +22,12 @@
             android:exported="false"/>
 
         <receiver android:name=".GeofenceBroadcastReceiver" />
-        <!--android:exported="false"
-            android:enabled="true"-->
 
     </application>
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!--permission to set ringer mode to silent-->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
 
 </manifest>

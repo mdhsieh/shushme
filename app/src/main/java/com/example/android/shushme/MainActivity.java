@@ -118,12 +118,12 @@ public class MainActivity extends AppCompatActivity implements
                 if (isEnabled)
                 {
                     geofencing.registerAllGeofences();
-                    Log.d(TAG, "registered all geofences");
+                    //Log.d(TAG, "registered all geofences");
                 }
                 else
                 {
                     geofencing.unregisterAllGeofences();
-                    Log.d(TAG, "unregistered all geofences");
+                    //Log.d(TAG, "unregistered all geofences");
                 }
             }
         });
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements
         // Initialize Places.
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), ApiKey.getApiKey());
-            Log.i(TAG, "Places Client initialized.");
+            //Log.i(TAG, "Places Client initialized.");
         }
 
         // Create a new Places client instance.
@@ -240,12 +240,12 @@ public class MainActivity extends AppCompatActivity implements
 
                     // update geofences
                     geofencing.updateGeofencesList(places);
-                    Log.d(TAG, "updated geofences list");
+                    //Log.d(TAG, "updated geofences list");
                     // register all geofences if switch enabled
                     if (isEnabled)
                     {
                         geofencing.registerAllGeofences();
-                        Log.d(TAG, "registered all geofences");
+                        //Log.d(TAG, "registered all geofences");
                     }
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
 
         // Initialize location permissions checkbox
-        final CheckBox locationPermissions = (CheckBox) findViewById(R.id.location_permission_checkbox);
+        final CheckBox locationPermissions = (CheckBox) findViewById(R.id.location_permissions_checkbox);
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity implements
 
     // Android 6.0 and up lets user allow permissions at runtime
     // Older versions request permissions at installation
-    public void onLocationPermissionClicked(View view)
+    public void onLocationPermissionsClicked(View view)
     {
         ActivityCompat.requestPermissions(MainActivity.this,
                 new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
@@ -409,13 +409,13 @@ public class MainActivity extends AppCompatActivity implements
 
             // Extract the place information from the API
             String placeId = place.getId();
-            String placeName = place.getName();
+            /* String placeName = place.getName();
             String placeAddress = place.getAddress();
             double latitude = place.getLatLng().latitude;
             double longitude = place.getLatLng().longitude;
 
             Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
-            Log.i(TAG, "Latitude: " + latitude + ", " + "Longitude: " + longitude);
+            Log.i(TAG, "Latitude: " + latitude + ", " + "Longitude: " + longitude); */
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
