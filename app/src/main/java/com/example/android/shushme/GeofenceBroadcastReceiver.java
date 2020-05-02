@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Build;
 import android.util.Log;
-//import android.widget.Toast;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -48,13 +47,10 @@ public class GeofenceBroadcastReceiver extends BroadcastReceiver {
         // Check which transition type has triggered this event
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER)
         {
-            //Log.d(TAG, "entered a geofence");
-            //Toast.makeText(context, "entered a geofence", Toast.LENGTH_LONG).show();
             setRingerMode(context, AudioManager.RINGER_MODE_SILENT);
         }
         else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)
         {
-            //Log.d(TAG, "exited a geofence");
             setRingerMode(context, AudioManager.RINGER_MODE_NORMAL);
         }
         else

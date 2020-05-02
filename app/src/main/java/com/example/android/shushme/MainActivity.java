@@ -122,12 +122,10 @@ public class MainActivity extends AppCompatActivity implements
                 if (isEnabled)
                 {
                     geofencing.registerAllGeofences();
-                    //Log.d(TAG, "registered all geofences");
                 }
                 else
                 {
                     geofencing.unregisterAllGeofences();
-                    //Log.d(TAG, "unregistered all geofences");
                 }
             }
         });
@@ -150,7 +148,6 @@ public class MainActivity extends AppCompatActivity implements
         // Initialize Places.
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), ApiKey.getApiKey());
-            //Log.i(TAG, "Places Client initialized.");
         }
 
         // Create a new Places client instance.
@@ -246,12 +243,10 @@ public class MainActivity extends AppCompatActivity implements
 
                     // update geofences
                     geofencing.updateGeofencesList(places);
-                    //Log.d(TAG, "updated geofences list");
                     // register all geofences if switch enabled
                     if (isEnabled)
                     {
                         geofencing.registerAllGeofences();
-                        //Log.d(TAG, "registered all geofences");
                     }
                 }).addOnFailureListener((exception) -> {
                     if (exception instanceof ApiException) {
@@ -328,7 +323,6 @@ public class MainActivity extends AppCompatActivity implements
                     android.provider.Settings
                             .ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS);
             startActivity(intent);
-            //Toast.makeText(this, getString(R.string.ringer_permissions_granted_message), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -375,13 +369,6 @@ public class MainActivity extends AppCompatActivity implements
 
             // Extract the place information from the API
             String placeId = place.getId();
-            /* String placeName = place.getName();
-            String placeAddress = place.getAddress();
-            double latitude = place.getLatLng().latitude;
-            double longitude = place.getLatLng().longitude;
-
-            Log.i(TAG, "Place: " + placeName + ", " + placeAddress + ", " + placeId);
-            Log.i(TAG, "Latitude: " + latitude + ", " + "Longitude: " + longitude); */
 
             // Create a new map of values, where column names are the keys
             ContentValues values = new ContentValues();
@@ -397,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements
         {
             // Handle the error.
             Status status = Autocomplete.getStatusFromIntent(data);
-            Log.i(TAG, status.getStatusMessage());
+            Log.e(TAG, status.getStatusMessage());
         }
         else if (resultCode == RESULT_CANCELED) {
             // The user canceled the operation.
