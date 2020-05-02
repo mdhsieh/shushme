@@ -17,6 +17,7 @@ package com.example.android.shushme;
 */
 
 import android.Manifest;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
@@ -68,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements
     public static final String TAG = MainActivity.class.getSimpleName();
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
     public static final int AUTOCOMPLETE_REQUEST_CODE = 4;
+
+    public static final String SHUSHME_NOTIFICATION_CHANNEL = "shushme_notification_channel";
 
     // Member variables
     private PlaceListAdapter mAdapter;
@@ -154,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements
         placesClient = Places.createClient(this);
 
         geofencing = new Geofencing(this, client);
+
+        // create notification channel, which is required on Android 8.0 = API 26 and up
+        createNotificationChannel();
     }
 
     /**
@@ -392,6 +398,24 @@ public class MainActivity extends AppCompatActivity implements
         else if (resultCode == RESULT_CANCELED) {
             // The user canceled the operation.
             Log.i(TAG, "No place was selected.");
+        }
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(SHUSHME_NOTIFICATION_CHANNEL, name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
         }
     }
 }
