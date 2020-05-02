@@ -13,8 +13,9 @@
     <!--<string name="ringer_permissions_granted_message">Ringer Permissions Granted</string>-->
     <string name="channel_name">ShushMe Category</string>
     <string name="channel_description">Make sound and show on screen</string>
-    <string name="silent_mode_activated">Silent mode activated!</string>
-    <string name="back_to_normal">Back to normal!</string>
-    <string name="silent_mode_description">ShushMe has set your ringer to silent.</string>
-    <string name="normal_mode_description">ShushMe has set your ringer to normal.</string>
+    <string name="silent_mode_activated">Silent mode activated</string>
+    <string name="back_to_normal">Back to normal</string>
+    <!--<string name="silent_mode_description">ShushMe has set your ringer to silent.</string>
+    <string name="normal_mode_description">ShushMe has set your ringer to normal.</string>-->
+    <string name="touch_to_relaunch">Touch to launch the app.</string>
 </resources>

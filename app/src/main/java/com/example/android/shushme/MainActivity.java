@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
         mAdapter = new PlaceListAdapter(this, places);
         mRecyclerView.setAdapter(mAdapter);
 
-        // initialize switch and handle enable/disable switch change
+        // Initialize switch and handle enable/disable switch change
         Switch onOffSwitch = (Switch) findViewById(R.id.enable_switch);
         isEnabled = getPreferences(Context.MODE_PRIVATE).getBoolean(getString(R.string.setting_enabled), false);
         onOffSwitch.setChecked(isEnabled);
@@ -295,7 +295,11 @@ public class MainActivity extends AppCompatActivity implements
         final CheckBox ringerPermissions = (CheckBox) findViewById(R.id.ringer_permissions_checkbox);
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // In case of Android N or later, we need to check if the permission was granted using isNotificationPolicyAccessGranted
+
+        // Check if the API supports such permission change and check if permission is granted.
+
+        // In case of Android N or later, we need to check if the permission was granted using
+        // isNotificationPolicyAccessGranted
         if (Build.VERSION.SDK_INT >= 24
                 && !notificationManager.isNotificationPolicyAccessGranted()) {
             ringerPermissions.setChecked(false);
